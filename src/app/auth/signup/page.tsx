@@ -1,4 +1,7 @@
 import SignUpClient from "@/components/auth/SignUpClient";
+export const dynamic = "force-dynamic";
+
+
 
 export default function SignUpPage() {
   return (

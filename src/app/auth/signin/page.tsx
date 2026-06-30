@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+
+
 import SignInClient from "@/components/auth/SignInClient";
 
 export default function SignInPage() {
