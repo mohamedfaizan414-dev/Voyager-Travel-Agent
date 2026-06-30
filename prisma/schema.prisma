@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  password      String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+
+  accounts Account[]
+  sessions Session[]
+  trips    Trip[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+enum TripStatus {
+  DRAFT
+  PLANNING
+  PLANNED
+  BOOKED
+  COMPLETED
+  CANCELLED
+}
+
+model Trip {
+  id            String     @id @default(cuid())
+  userId        String?
+  guestToken    String?
+  title         String
+  destination   String
+  origin        String?
+  startDate     DateTime?
+  endDate       DateTime?
+  travelers     Int        @default(1)
+  budget        Float?
+  preferences   Json?
+  agentState    Json?      // persisted TravelState (extracted fields, stage) between turns
+  coverImageUrl String?
+  status        TripStatus @default(DRAFT)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  user        User?        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itineraries Itinerary[]
+  bookings    Booking[]
+  messages    Message[]
+
+  @@index([userId])
+  @@index([guestToken])
+  @@map("trips")
+}
+
+model Itinerary {
+  id        String   @id @default(cuid())
+  tripId    String
+  dayNumber Int
+  date      DateTime?
+  summary   String?
+  items     Json
+  createdAt DateTime @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+  @@map("itineraries")
+}
+
+enum BookingType {
+  FLIGHT
+  HOTEL
+  ACTIVITY
+  CAR
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+  CANCELLED
+}
+
+model Booking {
+  id           String        @id @default(cuid())
+  tripId       String
+  type         BookingType
+  provider     String?
+  referenceId  String        @unique @default(cuid())
+  details      Json
+  price        Float?
+  currency     String        @default("USD")
+  status       BookingStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+  @@map("bookings")
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+  TOOL
+}
+
+model Message {
+  id        String      @id @default(cuid())
+  tripId    String
+  role      MessageRole
+  content   String
+  toolName  String?
+  metadata  Json?
+  createdAt DateTime    @default(now())
+
+  trip Trip @relation(fields: [tripId], references: [id], onDelete: Cascade)
+
+  @@index([tripId])
+  @@map("messages")
+}
+
+model GuestUsage {
+  id         String   @id @default(cuid())
+  guestToken String   @unique
+  runCount   Int      @default(0)
+  lastUsedAt DateTime @default(now())
+
+  @@map("guest_usage")
+}

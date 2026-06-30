@@ -1,0 +1,106 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0d0f20;
+  --foreground: #efe9da;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Visible keyboard focus, everywhere */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid #d4a24c;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Subtle dotted grid backdrop, evokes a flight-route map */
+.route-grid {
+  background-image: radial-gradient(circle at 1px 1px, rgba(239, 233, 218, 0.08) 1px, transparent 0);
+  background-size: 28px 28px;
+}
+
+/* --- Boarding-pass / ticket-stub signature component --- */
+.ticket {
+  position: relative;
+  background: linear-gradient(180deg, #1b2040 0%, #161931 100%);
+  border: 1px solid rgba(212, 162, 76, 0.25);
+  border-radius: 18px;
+  overflow: visible;
+}
+
+.ticket::before,
+.ticket::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: #0d0f20;
+  border: 1px solid rgba(212, 162, 76, 0.25);
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+.ticket::before {
+  left: -11px;
+}
+.ticket::after {
+  right: -11px;
+}
+
+.ticket-stub-divider {
+  border-left: 2px dashed rgba(212, 162, 76, 0.35);
+  position: relative;
+}
+
+.barcode {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: 28px;
+}
+.barcode span {
+  display: block;
+  width: 2px;
+  background: rgba(239, 233, 218, 0.4);
+}
+
+/* Animated flight path used on the hero */
+.flight-path {
+  stroke-dasharray: 6 8;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(212, 162, 76, 0.4);
+  border-radius: 8px;
+}
