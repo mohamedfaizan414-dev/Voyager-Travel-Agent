@@ -1,10 +1,8 @@
 import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/lib/prisma"; // Adjust this to your actual prisma client import
+import { prisma } from "@/lib/prisma"; 
 import { authConfig } from "./auth.config";
-import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-// import bcrypt from "bcryptjs"; // or whatever you use for credentials
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
@@ -15,12 +13,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-    Credentials({
-      async authorize(credentials) {
-        // Your existing credentials login logic (bcrypt.compare, etc.) goes here
-        // e.g., const user = await prisma.user.findUnique(...)
-        return null;
-      },
-    }),
+    // If you add Email/Password credentials back later, make sure to 
+    // actually use the 'credentials' variable inside authorize() 
+    // to verify passwords against your database.
   ],
 });
